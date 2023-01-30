@@ -1,0 +1,67 @@
+<!--
+ * @Author: xdli
+ * @Date: 2022-05-11 18:46:15
+ * @LastEditTime: 2022-05-11 18:46:16
+ * @LastEditors: xdli
+ * @Decription: 
+-->
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transmat Target 示例</title>
+    <script src="https://unpkg.com/transmat/lib/index.umd.js"></script>
+    <style>
+      body {
+        text-align: center;
+        font: 1.2em Helvetia, Arial, sans-serif;
+      }
+      #target {
+        border: dashed 1px rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+        margin: 1em;
+        padding: 4em;
+      }
+      .drag-active {
+        background: rgba(255, 255, 0, 0.1);
+      }
+      .drag-over {
+        background: rgba(255, 255, 0, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="target" tabindex="0">放这里哟！</div>
+    <script>
+      const { Transmat, addListeners, TransmatObserver } = transmat;
+
+      const target = document.getElementById("target");
+
+      addListeners(target, "receive", (event) => {
+        const transmat = new Transmat(event);
+        if (
+          transmat.hasType("application/json") &&
+          transmat.accept()
+        ) {
+          const jsonString = transmat.getData("application/json");
+          const data = JSON.parse(jsonString);
+          target.textContent = jsonString;
+          console.dir(data);
+        }
+      });
+
+      const obs = new TransmatObserver((entries) => {
+        for (const entry of entries) {
+          const transmat = new Transmat(entry.event);
+          if (transmat.hasType("application/json")) {
+            entry.target.classList.toggle("drag-active", entry.isActive);
+            entry.target.classList.toggle("drag-over", entry.isTarget);
+          }
+        }
+      });
+      obs.observe(target);
+    </script>
+  </body>
+</html>

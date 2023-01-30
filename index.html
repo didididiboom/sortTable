@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Listas con Drag and Drop || SortableJS</title>
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap" rel="stylesheet">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			background: #E3E5EB;
+			font-family: 'Open Sans', sans-serif;
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.contenedor {
+			width: 90%;
+			max-width: 900px;
+		}
+
+		.contenedor-lista {
+			display: flex;
+		}
+
+		.contenedor-lista h1 {
+			text-transform: uppercase;
+			font-size: 20px;
+			background: #fff;
+			height: 100px;
+			display: flex;
+			align-items: center;
+			padding: 40px;
+			border-radius: 10px 10px 0 0;
+			margin-bottom: 0;
+		}
+
+		.lista {
+			padding: 40px;
+			width: 100%;
+		}
+
+		.lista .persona {
+			background: #fff;
+			display: grid;
+			grid-template-columns: auto 1fr 1fr 1fr;
+			align-items: center;
+			padding: 20px;
+			border-radius: 10px;
+			margin-bottom: 20px;
+			cursor: move;
+		}
+
+
+
+		/* ? Clases para los estilos en los diferentes estados del drag and drop */
+		.lista .persona.seleccionado {
+			transform: scale(1.02) rotate(-1deg);
+			box-shadow: 0px 0px 20px rgba(149, 153, 159, .16);
+		}
+
+		.lista .persona.fantasma {
+			border: 2px dotted #000;
+		}
+
+		.lista .persona.drag {
+			opacity: 0;
+		}
+
+		/* ? ------- */
+
+
+
+		.lista .label {
+			text-transform: uppercase;
+			font-weight: 600;
+			margin-bottom: 5px;
+			color: #5173CF;
+		}
+
+		.lista .dato {
+			font-weight: bold;
+			font-size: 20px;
+		}
+
+		.lista .persona img {
+			width: 70px;
+			border-radius: 100%;
+			margin-right: 40px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="contenedor">
+		<div class="contenedor-lista">
+			<div class="lista" id="lista1">
+
+				<div class="persona" data-id="1">
+					<div class="foto">
+						<img src="img/1.png" alt="">
+					</div>
+					<div class="nombre">
+						<p class="label">Nombre</p>
+						<p class="dato">Carlos Arturo</p>
+					</div>
+					<div class="edad">
+						<p class="label">Edad</p>
+						<p class="dato">24</p>
+					</div>
+					<div class="correo">
+						<div class="label">Correo</div>
+						<p class="dato">carlos@gmail.com</p>
+					</div>
+				</div>
+
+				<!-- ? Persona #4 -->
+				<div class="persona" data-id="4">
+					<div class="foto">
+						<img src="img/4.png" alt="">
+					</div>
+					<div class="nombre">
+						<p class="label">Nombre</p>
+						<p class="dato">Mike</p>
+					</div>
+					<div class="edad">
+						<p class="label">Edad</p>
+						<p class="dato">18</p>
+					</div>
+					<div class="correo">
+						<div class="label">Correo</div>
+						<p class="dato">mike@gmail.com</p>
+					</div>
+				</div>
+			</div>
+			<div class="lista" id="lista2">
+
+				<!-- ? Persona #3 -->
+				<div class="persona" data-id="3">
+					<div class="foto">
+						<img src="img/3.png" alt="">
+					</div>
+					<div class="nombre">
+						<p class="label">Nombre</p>
+						<p class="dato">Stephanie</p>
+					</div>
+					<div class="edad">
+						<p class="label">Edad</p>
+						<p class="dato">20</p>
+					</div>
+					<div class="correo">
+						<div class="label">Correo</div>
+						<p class="dato">stephanie@gmail.com</p>
+					</div>
+				</div>
+
+				<div class="persona" data-id="2">
+					<div class="foto">
+						<img src="img/2.png" alt="">
+					</div>
+					<div class="nombre">
+						<p class="label">Nombre</p>
+						<p class="dato">Alejandro</p>
+					</div>
+					<div class="edad">
+						<p class="label">Edad</p>
+						<p class="dato">25</p>
+					</div>
+					<div class="correo">
+						<div class="label">Correo</div>
+						<p class="dato">alejandro@gmail.com</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		const lista1 = document.getElementById('lista1');
+		const lista2 = document.getElementById('lista2');
+
+		Sortable.create(lista1, {
+			animation: 150,
+			chosenClass: "seleccionado",
+			// ghostClass: "fantasma"
+			dragClass: "drag",
+
+			onEnd: () => {
+				console.log('Se inserto un elemento');
+			},
+			group: "lista-personas",
+			store: {
+				// Guardamos el orden de la lista
+				set: (sortable) => {
+					const orden = sortable.toArray();
+					localStorage.setItem(sortable.options.group.name, orden.join('|'));
+				},
+
+				// Obtenemos el orden de la lista
+				get: (sortable) => {
+					const orden = localStorage.getItem(sortable.options.group.name);
+					return orden ? orden.split('|') : [];
+				}
+			}
+		});
+
+		Sortable.create(lista2, {
+			animation: 150,
+			chosenClass: "seleccionado",
+			dragClass: "drag",
+
+			onEnd: () => {
+				console.log('Se inserto un elemento');
+			},
+			group: "lista-personas",
+			store: {
+				set: (sortable) => {
+					const orden = sortable.toArray();
+					localStorage.setItem(sortable.options.group.name, orden.join('|'));
+				},
+
+				get: (sortable) => {
+					const orden = localStorage.getItem(sortable.options.group.name);
+					return orden ? orden.split('|') : [];
+				}
+			}
+		});
+
+		console.log(Sortable);
+	</script>
+</body>
+
+</html>
